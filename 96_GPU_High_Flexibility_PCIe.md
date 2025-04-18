@@ -1,48 +1,48 @@
 
-# 96-GPU Edge Datacenter in a 20-ft Container (Option B: PCIe GPU Servers)
+# 96-GPU Edge Datacenter in a 20-ft Container (Option B: PCIe GPU Servers - high flexibility option)
 
-## 🧠 Compute Configuration
+## Compute Configuration
 
 - **12x 4U GPU Servers**
   - Each with 8x NVIDIA H100 PCIe GPUs (96 GPUs total)
   - 2x AMD EPYC CPUs per server
   - 1 TB RAM per server
 
-## 🗄️ Rack Configuration
+## Rack Configuration
 
 - 3x 42U Server Racks
   - Shock-mounted
   - Airflow optimized for hot aisle containment
 
-## 💾 Storage
+## Storage
 
 - 1x NVMe SSD Storage Array
   - 1PB usable capacity, all-flash
 
-## 🌐 Networking
+## Networking
 
 - 3x 100G Leaf Switches (NVIDIA Spectrum SN3700)
 - 2x 400G Spine Switches (NVIDIA Spectrum SN4600)
 - 1x OOB Management Switch (1G/10G)
 
-## ❄️ Cooling
+## Cooling
 
 - 3x Rear-Door Heat Exchangers
 - 1x External Chiller (180kW capacity)
 
-## ⚡ Power Configuration
+## Power Configuration
 
 - 6x High-Density 3-phase PDUs
 - 1x 120kVA UPS (15-minute runtime)
 - 1x 180kW Diesel Generator with ATS
 
-## 📦 Monitoring & Safety
+## Monitoring & Safety
 
 - Fire Suppression: Novec 1230 Clean Agent System
 - Sensors: Temp, Humidity, Smoke, Airflow
 - Remote Mgmt: IPMI, VPN, Environmental Monitoring
 
-## 📊 Energy Efficiency & PUE Estimate
+## Energy Efficiency & PUE Estimate
 
 | Component                            | Power (kW) |
 |--------------------------------------|------------|
@@ -53,14 +53,14 @@
 | **Total Facility Load**              | **183**    |
 | **PUE**                              | **1.27**   |
 
-## 📐 Layout
+## Layout
 
 - Cold aisle between racks
 - Front-to-back airflow
 - Rear access to networking and cooling
 - Additional rack space used for PDUs and network aggregation
 
-## 📋 Bill of Materials (Excerpt)
+## Bill of Materials 
 
 | Qty | Description                         | Part Number        | Vendor     |
 |-----|-------------------------------------|--------------------|------------|
