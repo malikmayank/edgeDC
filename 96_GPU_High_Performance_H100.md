@@ -1,48 +1,48 @@
 
-# 96-GPU Edge Datacenter in a 20-ft Container (NVIDIA-Based)
+# 96-GPU Edge Datacenter in a 20-ft Container
 
-## 🧠 Compute Configuration (Option A: NVIDIA HGX H100)
+## Compute Configuration with NVIDIA HGX H100
 
 - **3x NVIDIA HGX H100 Servers**
   - Each with 8x H100 SXM GPUs (96 GPUs total)
   - 2x Intel Xeon CPUs per node
   - 2 TB RAM per node
 
-## 🗄️ Rack Configuration
+## Rack Configuration
 
 - 2x 42U Server Racks
   - Shock-mounted
   - Airflow optimized for hot aisle containment
 
-## 💾 Storage
+## Storage
 
 - 1x NVMe SSD Storage Array
   - 1PB usable capacity, all-flash
 
-## 🌐 Networking
+## Networking
 
 - 2x 100G Leaf Switches (NVIDIA Spectrum SN3700)
 - 2x 400G Spine Switches (NVIDIA Spectrum SN4600)
 - 1x OOB Management Switch (1G/10G)
 
-## ❄️ Cooling
+## Cooling
 
 - 2x Rear-Door Heat Exchangers
 - 1x External Chiller (150kW capacity)
 
-## ⚡ Power Configuration
+## Power Configuration
 
 - 4x High-Density 3-phase PDUs
 - 1x 100kVA UPS (15-minute runtime)
 - 1x 150kW Diesel Generator with ATS
 
-## 📦 Monitoring & Safety
+## Monitoring & Safety
 
 - Fire Suppression: Novec 1230 Clean Agent System
 - Sensors: Temp, Humidity, Smoke, Airflow
 - Remote Mgmt: IPMI, VPN, Environmental Monitoring
 
-## 📊 Energy Efficiency & PUE Estimate
+## Energy Efficiency & PUE Estimate
 
 | Component                            | Power (kW) |
 |--------------------------------------|------------|
@@ -53,14 +53,15 @@
 | **Total Facility Load**              | **152**    |
 | **PUE**                              | **1.27**   |
 
-## 📐 Layout
+## Layout
 
 - Cold aisle between racks
 - Front-to-back airflow
 - Rear access to networking and cooling
 - LED strip lighting along ceiling
 
-## 📋 Bill of Materials (Excerpt)
+
+## Bill of Materials
 
 | Qty | Description                         | Part Number        | Vendor     |
 |-----|-------------------------------------|--------------------|------------|
