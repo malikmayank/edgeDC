@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Superedge GO - Vendor Marketplace</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            width: 35px;
+            height: 35px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-weight: 900;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-item {
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .nav-item.active {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        
+        .main-container {
+            display: flex;
+            height: calc(100vh - 70px);
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        .sidebar-section {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .section-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .filter-group {
+            margin-bottom: 15px;
+        }
+        
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .checkbox-item input {
+            cursor: pointer;
+        }
+        
+        .project-selector {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .project-selector:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            background: #f5f7fa;
+        }
+        
+        .content-header {
+            background: white;
+            padding: 25px 30px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .header-subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .vendor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+        
+        .vendor-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .vendor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+        
+        .vendor-header {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .vendor-logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 24px;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .vendor-info {
+            flex: 1;
+        }
+        
+        .vendor-name {
+            font-weight: 700;
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .vendor-category {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .tier-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .tier-premier {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #856404;
+        }
+        
+        .tier-verified {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .vendor-body {
+            padding: 20px;
+        }
+        
+        .vendor-description {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .vendor-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+        
+        .vendor-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+        
+        .tag {
+            padding: 4px 10px;
+            background: #e8eaf6;
+            color: #5e35b1;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .vendor-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stars {
+            color: #ffc107;
+            font-size: 16px;
+        }
+        
+        .rating-text {
+            font-size: 13px;
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .price-range {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .tabs {
+            background: white;
+            border-bottom: 2px solid #e0e0e0;
+            padding: 0 30px;
+        }
+        
+        .tab-list {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .tab {
+            padding: 15px 5px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            margin-bottom: -2px;
+        }
+        
+        .tab:hover {
+            color: #667eea;
+        }
+        
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .floating-rfp {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .floating-rfp:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(102, 126, 234, 0.7);
+        }
+        
+        .comparison-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 2px solid #e0e0e0;
+            padding: 15px 30px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-bar.show {
+            display: flex;
+        }
+        
+        .comparison-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .comparison-count {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 16px;
+        }
+        
+        .selected-vendors {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .selected-chip {
+            padding: 6px 12px;
+            background: #e8eaf6;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #5e35b1;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            padding: 25px 30px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .modal-close {
+            font-size: 30px;
+            color: #999;
+            cursor: pointer;
+            line-height: 1;
+        }
+        
+        .modal-close:hover {
+            color: #333;
+        }
+        
+        .modal-body {
+            padding: 30px;
+        }
+        
+        .vendor-detail-section {
+            margin-bottom: 30px;
+        }
+        
+        .detail-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .portfolio-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .portfolio-name {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .portfolio-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .info-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .info-value {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div><img src="images/logo.png" /></div>
+            
+            <span>GO</span>
+        </div>
+        <div class="nav">
+            <div class="nav-item active">Marketplace</div>
+            <div class="nav-item">My RFPs</div>
+            <div class="nav-item">Projects</div>
+            <div class="nav-item">Messages</div>
+        </div>
+        <div class="user-menu">
+            <div class="nav-item">Help</div>
+            <div class="user-avatar">JD</div>
+        </div>
+    </div>
+    
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="section-title">Current Project</div>
+                <select class="project-selector">
+                    <option>California DC Expansion</option>
+                    <option>East Coast Deployment</option>
+                    <option>Texas Grid Project</option>
+                </select>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="section-title">Filters</div>
+                
+                <div class="filter-group">
+                    <div class="filter-label">Vendor Category</div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" checked>
+                            <span>Charge Point Operators (23)</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" checked>
+                            <span>Container DC Providers (18)</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox">
+                            <span>Electrical Contractors (45)</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox">
+                            <span>Networking Equipment (32)</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox">
+                            <span>Security Systems (28)</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <div class="filter-label">Tier Level</div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" checked>
+                            <span>Premier Partners</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" checked>
+                            <span>Verified Providers</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox">
+                            <span>Marketplace Participants</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <div class="filter-label">Location</div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" checked>
+                            <span>California</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox">
+                            <span>Texas</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox">
+                            <span>East Coast</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <div class="filter-label">Rating</div>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" checked>
+                            <span>4.5+ stars</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox">
+                            <span>4.0+ stars</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <div class="content-header">
+                <div class="header-left">
+                    <h1>Vendor Marketplace</h1>
+                    <div class="header-subtitle">41 vendors match your project requirements</div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary">Compare (0)</button>
+                    <button class="btn btn-primary">Create RFP</button>
+                </div>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab-list">
+                    <div class="tab active">All Vendors (41)</div>
+                    <div class="tab">Invited (8)</div>
+                    <div class="tab">Proposals (3)</div>
+                    <div class="tab">Shortlisted (5)</div>
+                </div>
+            </div>
+            
+            <div class="vendor-grid">
+                <!-- Vendor Card 1 -->
+                <div class="vendor-card" onclick="showVendorDetail()">
+                    <div class="vendor-header">
+                        <div class="vendor-logo">CP</div>
+                        <div class="vendor-info">
+                            <div class="vendor-name">ChargePoint Pro</div>
+                            <div class="vendor-category">Charge Point Operator</div>
+                        </div>
+                        <span class="tier-badge tier-premier">Premier</span>
+                    </div>
+                    <div class="vendor-body">
+                        <div class="vendor-description">
+                            Leading EV charging infrastructure provider with 15+ years experience deploying high-capacity charging networks for commercial applications.
+                        </div>
+                        <div class="vendor-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">150+</span>
+                                <span class="stat-label">Projects</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">98%</span>
+                                <span class="stat-label">On-Time</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">$45M</span>
+                                <span class="stat-label">Deployed</span>
+                            </div>
+                        </div>
+                        <div class="vendor-tags">
+                            <span class="tag">DC Fast Charging</span>
+                            <span class="tag">Network Mgmt</span>
+                            <span class="tag">24/7 Support</span>
+                        </div>
+                        <div class="vendor-footer">
+                            <div class="rating">
+                                <span class="stars">★★★★★</span>
+                                <span class="rating-text">4.9 (127)</span>
+                            </div>
+                            <div class="price-range">$$-$$$</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Vendor Card 2 -->
+                <div class="vendor-card">
+                    <div class="vendor-header">
+                        <div class="vendor-logo">MD</div>
+                        <div class="vendor-info">
+                            <div class="vendor-name">ModularDC Solutions</div>
+                            <div class="vendor-category">Container DC Provider</div>
+                        </div>
+                        <span class="tier-badge tier-premier">Premier</span>
+                    </div>
+                    <div class="vendor-body">
+                        <div class="vendor-description">
+                            Turnkey containerized datacenter solutions with rapid deployment capabilities. Specializing in edge computing infrastructure.
+                        </div>
+                        <div class="vendor-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">85+</span>
+                                <span class="stat-label">Projects</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">95%</span>
+                                <span class="stat-label">On-Time</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">$62M</span>
+                                <span class="stat-label">Deployed</span>
+                            </div>
+                        </div>
+                        <div class="vendor-tags">
+                            <span class="tag">Modular Design</span>
+                            <span class="tag">Rapid Deploy</span>
+                            <span class="tag">GPU Ready</span>
+                        </div>
+                        <div class="vendor-footer">
+                            <div class="rating">
+                                <span class="stars">★★★★★</span>
+                                <span class="rating-text">4.8 (94)</span>
+                            </div>
+                            <div class="price-range">$$$</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Vendor Card 3 -->
+                <div class="vendor-card">
+                    <div class="vendor-header">
+                        <div class="vendor-logo">EV</div>
+                        <div class="vendor-info">
+                            <div class="vendor-name">EVolution Networks</div>
+                            <div class="vendor-category">Charge Point Operator</div>
+                        </div>
+                        <span class="tier-badge tier-verified">Verified</span>
+                    </div>
+                    <div class="vendor-body">
+                        <div class="vendor-description">
+                            California-based EV charging specialist with expertise in solar integration and grid optimization for commercial properties.
+                        </div>
+                        <div class="vendor-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">72+</span>
+                                <span class="stat-label">Projects</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">92%</span>
+                                <span class="stat-label">On-Time</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">$28M</span>
+                                <span class="stat-label">Deployed</span>
+                            </div>
+                        </div>
+                        <div class="vendor-tags">
+                            <span class="tag">Solar Integration</span>
+                            <span class="tag">California</span>
+                            <span class="tag">Turnkey</span>
+                        </div>
+                        <div class="vendor-footer">
+                            <div class="rating">
+                                <span class="stars">★★★★☆</span>
+                                <span class="rating-text">4.7 (68)</span>
+                            </div>
+                            <div class="price-range">$$</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Vendor Card 4 -->
+                <div class="vendor-card">
+                    <div class="vendor-header">
+                        <div class="vendor-logo">ED</div>
+                        <div class="vendor-info">
+                            <div class="vendor-name">EdgeDeploy Systems</div>
+                            <div class="vendor-category">Container DC Provider</div>
+                        </div>
+                        <span class="tier-badge tier-premier">Premier</span>
+                    </div>
+                    <div class="vendor-body">
+                        <div class="vendor-description">
+                            Full-service provider of edge datacenter infrastructure with proprietary cooling solutions and power management systems.
+                        </div>
+                        <div class="vendor-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">110+</span>
+                                <span class="stat-label">Projects</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">97%</span>
+                                <span class="stat-label">On-Time</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">$88M</span>
+                                <span class="stat-label">Deployed</span>
+                            </div>
+                        </div>
+                        <div class="vendor-tags">
+                            <span class="tag">Cooling Tech</span>
+                            <span class="tag">Power Mgmt</span>
+                            <span class="tag">Monitoring</span>
+                        </div>
+                        <div class="vendor-footer">
+                            <div class="rating">
+                                <span class="stars">★★★★★</span>
+                                <span class="rating-text">4.9 (156)</span>
+                            </div>
+                            <div class="price-range">$$$-$$$$</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Vendor Card 5 -->
+                <div class="vendor-card">
+                    <div class="vendor-header">
+                        <div class="vendor-logo">QC</div>
+                        <div class="vendor-info">
+                            <div class="vendor-name">QuickCharge Alliance</div>
+                            <div class="vendor-category">Charge Point Operator</div>
+                        </div>
+                        <span class="tier-badge tier-verified">Verified</span>
+                    </div>
+                    <div class="vendor-body">
+                        <div class="vendor-description">
+                            Regional EV charging network operator with focus on high-power DC charging and fleet management solutions.
+                        </div>
+                        <div class="vendor-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">58+</span>
+                                <span class="stat-label">Projects</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">90%</span>
+                                <span class="stat-label">On-Time</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">$19M</span>
+                                <span class="stat-label">Deployed</span>
+                            </div>
+                        </div>
+                        <div class="vendor-tags">
+                            <span class="tag">Fleet Mgmt</span>
+                            <span class="tag">High Power</span>
+                            <span class="tag">Cost
