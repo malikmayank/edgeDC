@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Superedge MAX - Queue Analysis & Matching</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            width: 35px;
+            height: 35px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #764ba2;
+            font-weight: 900;
+        }
+        
+        .nav {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-item {
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .nav-item.active {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #764ba2;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        
+        .main-container {
+            display: flex;
+            height: calc(100vh - 70px);
+        }
+        
+        .sidebar {
+            width: 320px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        .sidebar-section {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .section-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .project-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .project-card:hover {
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .project-card.active {
+            border-color: #764ba2;
+            background: #f5f0ff;
+        }
+        
+        .project-name {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .project-meta {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        
+        .status-analyzing {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-complete {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-draft {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .btn-new {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-new:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(118, 75, 162, 0.4);
+        }
+        
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+        
+        .project-header {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .project-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .project-subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: #764ba2;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        
+        .section-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-icon {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .comparison-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #555;
+            font-size: 13px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+        }
+        
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .highlight {
+            background: #d4edda;
+            font-weight: 700;
+            color: #155724;
+        }
+        
+        .site-list-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .site-mini-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        
+        .site-mini-card:hover {
+            border-color: #764ba2;
+            box-shadow: 0 4px 12px rgba(118, 75, 162, 0.2);
+        }
+        
+        .site-mini-name {
+            font-weight: 700;
+            color: #333;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .site-mini-location {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .site-mini-stats {
+            display: flex;
+            gap: 10px;
+            font-size: 11px;
+        }
+        
+        .site-mini-stat {
+            background: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: #555;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin-top: 15px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            background: #764ba2;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #764ba2;
+        }
+        
+        .timeline-date {
+            font-weight: 700;
+            color: #764ba2;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-content {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .ai-insight {
+            background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #764ba2;
+        }
+        
+        .ai-insight-title {
+            font-weight: 700;
+            color: #764ba2;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ai-insight-content {
+            color: #555;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #764ba2;
+            border: 2px solid #764ba2;
+        }
+        
+        .btn-secondary:hover {
+            background: #764ba2;
+            color: white;
+        }
+        
+        .chart-container {
+            margin-top: 20px;
+            height: 250px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+            height: 200px;
+            padding: 20px;
+        }
+        
+        .bar {
+            flex: 1;
+            background: linear-gradient(180deg, #764ba2 0%, #667eea 100%);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            min-width: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .bar:hover {
+            opacity: 0.8;
+            transform: translateY(-5px);
+        }
+        
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .bar-value {
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #764ba2 0%, #667eea 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .risk-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .risk-low {
+            background: #28a745;
+        }
+        
+        .risk-medium {
+            background: #ffc107;
+        }
+        
+        .risk-high {
+            background: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div></div>
+            <img src="images/logo.png" />
+            <span>MAX</span>
+        </div>
+        <div class="nav">
+            <div class="nav-item active">Projects</div>
+            <div class="nav-item">Queue Monitor</div>
+            <div class="nav-item">Analytics</div>
+            <div class="nav-item">Reports</div>
+        </div>
+        <div class="user-menu">
+            <div class="nav-item">Help</div>
+            <div class="user-avatar">TC</div>
+        </div>
+    </div>
+    
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <button class="btn-new">+ New Analysis</button>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="section-title">Recent Projects</div>
+                
+                <div class="project-card active">
+                    <div class="project-name">California DC Expansion</div>
+                    <div class="project-meta">
+                        <span>50 MW</span>
+                        <span>12 sites</span>
+                    </div>
+                    <span class="status-badge status-complete">Complete</span>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-name">East Coast Deployment</div>
+                    <div class="project-meta">
+                        <span>75 MW</span>
+                        <span>18 sites</span>
+                    </div>
+                    <span class="status-badge status-analyzing">Analyzing</span>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-name">Texas Grid Project</div>
+                    <div class="project-meta">
+                        <span>100 MW</span>
+                        <span>25 sites</span>
+                    </div>
+                    <span class="status-badge status-draft">Draft</span>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-name">Pacific Northwest</div>
+                    <div class="project-meta">
+                        <span>30 MW</span>
+                        <span>8 sites</span>
+                    </div>
+                    <span class="status-badge status-complete">Complete</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="section-title">Queue Alerts</div>
+                <div style="font-size: 13px; color: #666; line-height: 1.6;">
+                    <div style="margin-bottom: 10px;">
+                        <strong>CAISO Queue:</strong> 3 new submissions
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>PG&E:</strong> Average wait time increased to 24 months
+                    </div>
+                    <div>
+                        <strong>SCE:</strong> 2 projects approved
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <div class="project-header">
+                <div class="project-title">California DC Expansion</div>
+                <div class="project-subtitle">Distributed alternative to 50 MW centralized datacenter • Analyzed on Oct 15, 2024</div>
+                
+                <div class="quick-stats">
+                    <div class="stat-box">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Edge Sites</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">18mo</div>
+                        <div class="stat-label">Time Savings</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">$28M</div>
+                        <div class="stat-label">Cost Savings</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">35%</div>
+                        <div class="stat-label">Carbon Reduction</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-card">
+                <div class="card-title">
+                    <div class="card-icon">📊</div>
+                    <span>Cost Comparison</span>
+                </div>
+                
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Centralized Approach</th>
+                            <th>Distributed Edge (MAX)</th>
+                            <th>Savings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Capital Expenditure</strong></td>
+                            <td>$125M</td>
+                            <td class="highlight">$97M</td>
+                            <td>$28M (22%)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Time to Deploy</strong></td>
+                            <td>36 months</td>
+                            <td class="highlight">18 months</td>
+                            <td>18 months (50%)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Annual OpEx</strong></td>
+                            <td>$8.5M</td>
+                            <td class="highlight">$6.8M</td>
+                            <td>$1.7M (20%)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Interconnection Wait</strong></td>
+                            <td>24-30 months</td>
+                            <td class="highlight">0 months</td>
+                            <td>24-30 months</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Carbon Footprint</strong></td>
+                            <td>45,000 tons CO₂/yr</td>
+                            <td class="highlight">29,250 tons CO₂/yr</td>
+                            <td>15,750 tons (35%)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="chart-container">
+                    <div class="bar-chart">
+                        <div class="bar" style="height: 100%;">
+                            <div class="bar-value">$125M</div>
+                            <div class="bar-label">Centralized CapEx</div>
+                        </div>
+                        <div class="bar" style="height: 78%;">
+                            <div class="bar-value">$97M</div>
+                            <div class="bar-label">Distributed CapEx</div>
+                        </div>
+                        <div class="bar" style="height: 100%;">
+                            <div class="bar-value">36mo</div>
+                            <div class="bar-label">Centralized Time</div>
+                        </div>
+                        <div class="bar" style="height: 50%;">
+                            <div class="bar-value">18mo</div>
+                            <div class="bar-label">Distributed Time</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-card">
+                <div class="card-title">
+                    <div class="card-icon">🤖</div>
+                    <span>AI-Powered Recommendations</span>
+                </div>
+                
+                <div class="ai-insight">
+                    <div class="ai-insight-title">
+                        ✨ Claude AI Analysis
+                    </div>
+                    <div class="ai-insight-content">
+                        Based on your requirements for 50 MW capacity in California with an 18-month timeline, I recommend a distributed approach across 12 edge sites. This configuration eliminates interconnection queue delays, reduces capital costs by 22%, and provides superior geographic redundancy. The Bay Area sites offer excellent fiber connectivity and renewable energy access, while Central Valley locations provide cost-effective power. Your workload characteristics (latency-sensitive AI inference) are ideally suited for edge deployment, with 35% lower carbon footprint through solar integration and EV charging co-optimization.
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <div style="font-weight: 700; margin-bottom: 10px; color: #333;">Key Insights:</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <div style="font-weight: 600; color: #764ba2; margin-bottom: 5px;">⚡ Power Optimization</div>
+                            <div style="font-size: 13px; color: #555;">Average electricity cost: $0.19/kWh vs $0.24/kWh centralized</div>
+                        </div>
+                        <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <div style="font-weight: 600; color: #764ba2; margin-bottom: 5px;">🌐 Network Latency</div>
+                            <div style="font-size: 13px; color: #555;">Average latency to users: 12ms vs 45ms centralized</div>
+                        </div>
+                        <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <div style="font-weight: 600; color: #764ba2; margin-bottom: 5px;">🔄 Redundancy</div>
+                            <div style="font-size: 13px; color: #555;">99.99% availability with multi-site failover</div>
+                        </div>
+                        <div style="padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <div style="font-weight: 600; color: #764ba2; margin-bottom: 5px;">🌱 Sustainability</div>
+                            <div style="font-size: 13px; color: #555;">68% renewable energy utilization (solar + EV arbitrage)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-card">
+                <div class="card-title">
+                    <div class="card-icon">📍</div>
+                    <span>Recommended Edge Sites (12 total)</span>
+                </div>
+                
+                <div class="site-list-container">
+                    <div class="site-mini-card">
+                        <div class="site-mini-name">Bay Area Tech Hub A</div>
+                        <div class="site-mini-location">San Francisco, CA</div>
+                        <div class="site-mini-stats">
+                            <div class="site-mini-stat">5.2 MW</div>
+                            <div class="site-mini-stat">Score: 92</div>
+                        </div>
+                    </div>
+                    
+                    <div class="site-mini-card">
+                        <div class="site-mini-name">Silicon Valley Hub</div>
+                        <div class="site-mini-location">Palo Alto, CA</div>
+                        <div class="site-mini-stats">
+                            <div class="site-mini-stat">4.8 MW</div>
+                            <div class="site-mini-stat">Score: 89</div>
+                        </div>
+                    </div>
+                    
+                    <div class="site-mini-card">
+                        <div class="site-mini-name">Oakland Transit Center</div>
+                        <div class="site-mini-location">Oakland, CA</div>
+                        <div class="site-mini-stats">
+                            <div class="site-mini-stat">3.5 MW</div>
+                            <div class="site-mini-stat">Score: 85</div>
+                        </div>
+                    </div>
+                    
+                    <div class="site-mini-card">
+                        <div class="site-mini-name">San Jose Commercial</div>
+                        <div class="site-mini-location">San Jose, CA</div>
+                        <div class="site-mini-stats">
+                            <div class="site-mini-stat">4.2 MW</div>
+                            <div class="site-mini-stat">Score: 87</div>
+                        </div>
+                    </div>
+                    
+                    <div class="site-mini-card">
+                        <div class="site-mini-name">Sacramento Valley</div>
+                        <div class="site-mini-location">Sacramento, CA</div>
+                        <div class="site-mini-stats">
+                            <div class="site-mini-stat">6.5 MW</div>
+                            <div class="site-mini-stat">Score: 81</div>
+                        </div>
+                    </div>
+                    
+                    <div class="site-mini-card">
+                        <div class="site-mini-name">Fresno Solar Park</div>
+                        <div class="site-mini-location">Fresno, CA</div>
+                        <div class="site-mini-stats">
+                            <div class="site-mini-stat">7.8 MW</div>
+                            <div class="site-mini-stat">Score: 78</div>
+                        </div>
+                    </div>
+                    
+                    <div class="site-mini-card">
+                        <div class="site-mini-name">Los Angeles Metro</div>
+                        <div class="site-mini-location">Los Angeles, CA</div>
+                        <div class="site-mini-stats">
+                            <div class="site-mini-stat">4.0 MW</div>
+                            <div class="site-mini-stat">Score: 88</div>
+                        </div>
+                    </div>
+                    
+                    <div class="site-mini-card">
+                        <div class="site-mini-name">San Diego Coastal</div>
+                        <div class="site-mini-location">San Diego, CA</div>
+                        <div class="site-mini-stats">
+                            <div class="site-mini-stat">3.8 MW</div>
+                            <div class="site-mini-stat">Score: 84</div>
+                        </div>
+                    </div>
+                    
+                    <div class="site-mini-card">
+                        <div class="site-mini-name">Riverside Industrial</div>
+                        <div class="site-mini-location">Riverside, CA</div>
+                        <div class="site-mini-stats">
+                            <div class="site-mini-stat">5.5 MW</div>
+                            <div class="site-mini-stat">Score: 76</div>
+                        </div>
+                    </div>
+                    
+                    <div class="site-mini-card">
+                        <div class="site-mini-name">Bakersfield Energy</div>
+                        <div class="site-mini-location">Bakersfield, CA</div>
+                        <div class="site-mini-stats">
+                            <div class="site-mini-stat">6.2 MW</div
